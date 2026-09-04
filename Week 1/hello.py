@@ -5,7 +5,7 @@ print ("My first post!")
 print ("==========================================")
 
 #Activity 2
-'''print("\n")
+print("\n")
 username = "cool_creator"
 bio = "Fun Blogger"
 followers = 100
@@ -15,7 +15,7 @@ print ("Bio: ", bio)
 print ("Followers: ", followers)
 
 #Activity 3
-followers = 100
+'''followers = 100
 
 followers +=50
 print ("Day 1: ", followers)
