@@ -27,7 +27,7 @@ followers += 10
 print ("Day 3: ", followers)
 
 #Activity 4
-'''print("\n")
+print("\n")
 username = input("Enter Username: ")
 age = input("Enter Age: ")
 category = input("Enter Content Category: ")
@@ -39,7 +39,7 @@ print("Age: ", age)
 print("Content Category: ", category)
 
 #Activity 5
-print("\n")
+'''print("\n")
 username = input("Enter Username: ")
 age = int(input("Enter Age: "))
 category = input("Enter Content Category: ")
