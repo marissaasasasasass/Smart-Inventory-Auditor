@@ -5,7 +5,7 @@ print ("My first post!")
 print ("==========================================")
 
 #Activity 2
-print("\n")
+'''print("\n")
 username = "cool_creator"
 bio = "Fun Blogger"
 followers = 100
@@ -51,4 +51,4 @@ print("Age: ", age)
 print("Content Category: ", category)
 
 if age>40 and category =="fun":
-    print("You are old what is fun for you??")
+    print("You are old what is fun for you??")'''
