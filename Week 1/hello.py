@@ -39,7 +39,7 @@ print("Age: ", age)
 print("Content Category: ", category)
 
 #Activity 5
-'''print("\n")
+print("\n")
 username = input("Enter Username: ")
 age = int(input("Enter Age: "))
 category = input("Enter Content Category: ")
@@ -51,4 +51,4 @@ print("Age: ", age)
 print("Content Category: ", category)
 
 if age>40 and category =="fun":
-    print("You are old what is fun for you??") '''
+    print("You are old what is fun for you??")
