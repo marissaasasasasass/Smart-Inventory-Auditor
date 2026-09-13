@@ -5,6 +5,8 @@ while True: #Runs in a continous loop (2)
 
     if inventory.isdigit() and int(inventory) > 0: #Accept positive stock values as integers (3)
         inventory = int(inventory)
+        entries += 1
+        inventory_stock += inventory #Keep a running total of the inventory (6)
 
     elif inventory == 'quit':
         break
