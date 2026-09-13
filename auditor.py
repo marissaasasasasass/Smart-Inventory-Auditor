@@ -8,6 +8,13 @@ while True: #Runs in a continous loop (2)
         entries += 1
         inventory_stock += inventory #Keep a running total of the inventory (6)
 
+        if inventory_stock >= 500: #Trigger Overstock Alert (7)
+            print("Warning: Inventory exceeds maximum capacity of 500 units.")
+            break
+
+        else:
+            print(f"Current inventory: {inventory_stock}")
+
     elif inventory == 'quit':
         break
 
