@@ -1,4 +1,5 @@
 inventory_stock = 0
+entries = 0 
 
 while True: #Runs in a continous loop (2)
     inventory = input("Enter a stock quantity (or 'quit' to exit): ")
@@ -16,6 +17,9 @@ while True: #Runs in a continous loop (2)
             print(f"Current inventory: {inventory_stock}")
 
     elif inventory == 'quit':
+        #Reporting (8)
+        print (f"Final inventory: {inventory_stock}")
+        print (f"Total entries: {entries}")
         break
 
     elif inventory.isdigit() and int(inventory) <= 0: #Enforce Business Rule (5)
