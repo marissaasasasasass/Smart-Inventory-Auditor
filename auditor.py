@@ -9,5 +9,8 @@ while True: #Runs in a continous loop (2)
     elif inventory == 'quit':
         break
 
+    elif inventory.isdigit() and int(inventory) <= 0: #Enforce Business Rule (5)
+        print("Stock quantity must be above 0.")
+
     else: #Handle Invalid Input (4)
         print("Invalid input. Please enter a valid stock quantity or 'quit' to exit.")  
