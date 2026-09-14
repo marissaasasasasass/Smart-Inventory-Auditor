@@ -3,7 +3,13 @@ inventory_stock = 0
 
 while True: #Runs in a continous loop (2)
     inventory = input("Enter a stock quantity (or 'quit' to exit): ")
-    inventory = int(inventory)
 
-    if inventory == "quit":
+    if inventory.isdigit(): #Accept positive stock values as integers (3)
+        inventory = int(inventory)
+
+    elif inventory == "quit":
         break
+
+    else:
+        print("Invalid input. Please enter a valid stock quantity or 'quit' to exit.")
+        continue
