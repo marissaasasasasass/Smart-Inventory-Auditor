@@ -30,3 +30,9 @@ def get_valid_input():
 def process_delivery(current_total, new_value):
     delivery_total = current_total + new_value
     return delivery_total
+
+def calculate_tax(amount):
+    tax_rate = 0.1  # 10% tax rate
+    tax_amount = amount * tax_rate
+    return tax_amount
+
