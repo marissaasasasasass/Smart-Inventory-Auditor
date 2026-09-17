@@ -36,3 +36,6 @@ def calculate_tax(amount):
     tax_amount = amount * tax_rate
     return tax_amount
 
+def generate_report(total_units, failed_attempts):
+    print(f"Final inventory: {total_units}")
+    print(f"Total failed entries: {failed_attempts}")
