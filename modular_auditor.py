@@ -2,30 +2,30 @@
 
 # 1. Initialize the inventory to zero in the start 
 inventory_stock = 0
-entries = 0
+failed_entries = 0
 
 def get_valid_input():
-    while True:
-        inventory = input("Enter a stock quantity (or 'quit' to exit): ")
+    inventory = input("Enter a stock quantity (or 'quit' to exit): ")
 
-        if inventory.isdigit() and int(inventory) > 0: #Accept positive stock values as integers (3)
-            inventory_stock += inventory #Keep a running total of the inventory (6)
+    if inventory == "quit":
+        return "quit"
 
-            if inventory_stock >= 500: #Trigger Overstock Alert (7)
-                print("Warning: Inventory exceeds maximum capacity of 500 units.")
-                return int(inventory_stock)
-                break
+    elif inventory.startswith("-") and inventory[1:].isdigit():
+        print("Stock quantity must be above 0.")
+        return None
 
-        elif inventory == "quit": #Unless the user types 'quit' (2)
-            return "quit"
+    elif inventory.isdigit():
+        inventory = int(inventory)
 
-        elif inventory.isdigit() and int(inventory) <= 0: #Enforce Business Rule (5)
+        if inventory > 0:
+            return inventory
+        else:
             print("Stock quantity must be above 0.")
-            continue
+            return None
 
-        else: #Handle Invalid Input (4)
-            print("Invalid input. Please enter a valid stock quantity or 'quit' to exit.")
-            continue
+    else:
+        print("Invalid input. Please enter a valid stock quantity or 'quit' to exit.")
+        return None
 
 def process_delivery(current_total, new_value):
     delivery_total = current_total + new_value
