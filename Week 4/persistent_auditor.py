@@ -2,19 +2,38 @@
 
 def load_inventory():
     try:
-        file = open("orders.txt", "r")
-        inventory = int(file.read())
+        file = open("inventory.txt", "r")
+
+        lines = file.readlines()
         file.close()
-        return inventory
+
+        # First line stores the final inventory total
+        inventory = int(lines[0].strip())
+
+        # Second line onwards store previous transactions
+        history = []
+
+        for line in lines[1:]:
+            history.append(int(line.strip()))
+
+        return inventory, history
 
     except FileNotFoundError:
-        # File does not exist yet
-        return 0
+        # Start with empty inventory and empty history
+        return 0, []
 
-def save_inventory(inventory):
-    file = open("orders.txt", "w")
-    file.write(str(inventory))
+def save_inventory(inventory, history):
+    file = open("inventory.txt", "w")
+
+    # Save final inventory
+    file.write(str(inventory) + "\n")
+
+    # Save every transaction
+    for transaction in history:
+        file.write(str(transaction) + "\n")
+
     file.close()
+
 
 def get_valid_input():
     inventory = input("Enter a stock quantity (or 'quit' to exit): ")
@@ -52,13 +71,17 @@ def generate_report(total_units, failed_attempts):
     print(f"Final inventory: {total_units}")
     print(f"Total failed entries: {failed_attempts}")
 
+# ----------------------------------------
+# Main Program
+# ----------------------------------------   
+
 # Run infinite loop until user decides to quit or inventory exceeds 500
-inventory_stock = load_inventory()
+inventory_stock, transaction_history = load_inventory()
 failed_entries = 0
 deliveries_processed = 0
 
 while True:
-    product_id = input("Enter product ID (or 'quit' to exit): ")
+    product_id = input("Enter product ID: ")
     user_input = get_valid_input()
 
     # User wants to quit
@@ -72,6 +95,9 @@ while True:
 
     # Valid delivery
     else:
+        # Store transaction in history
+        transaction_history.append(user_input)
+
         inventory_stock = process_delivery(inventory_stock, user_input)
 
         tax = calculate_tax(user_input)
@@ -81,11 +107,14 @@ while True:
         print(f"Delivery processed: {user_input} units")
         print(f"Tax for this delivery: {tax}")
         print(f"Current inventory: {inventory_stock}")
-        save_inventory(inventory_stock)
 
         if inventory_stock > 500:
-            print("Warning: Inventory exceeds maximum capacity of 500 units.")
+            print(
+                "Warning: Inventory exceeds maximum capacity of 500 units."
+            )
             break
 
-# This only happens after the loop ends
+
 generate_report(inventory_stock, failed_entries)
+
+print("Transaction history:", transaction_history)
