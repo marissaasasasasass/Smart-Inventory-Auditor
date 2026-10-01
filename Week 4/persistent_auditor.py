@@ -1,36 +1,44 @@
 # https://github.com/marissaasasasasass/Smart-Inventory-Auditor
 
 def load_inventory():
+    inventory = {}
+    history = []
+
     try:
         file = open("inventory.txt", "r")
 
-        lines = file.readlines()
+        for line in file:
+            line = line.strip()
+
+            if line == "":
+                continue
+
+            parts = line.split(",")
+            product_id = parts[0]
+            product_name = parts[1]
+            quantity = int(parts[2])
+            inventory[product_id] = [product_name, quantity]
+
         file.close()
 
-        # First line stores the final inventory total
-        inventory = int(lines[0].strip())
-
-        # Second line onwards store previous transactions
-        history = []
-
-        for line in lines[1:]:
-            history.append(int(line.strip()))
-
-        return inventory, history
-
     except FileNotFoundError:
-        # Start with empty inventory and empty history
-        return 0, []
+        pass
+
+    return inventory, history
+
 
 def save_inventory(inventory, history):
     file = open("inventory.txt", "w")
 
-    # Save final inventory
-    file.write(str(inventory) + "\n")
+    for product_id in inventory:
+        product_name = inventory[product_id][0]
+        quantity = inventory[product_id][1]
 
-    # Save every transaction
-    for transaction in history:
-        file.write(str(transaction) + "\n")
+        file.write(
+            product_id + "," +
+            product_name + "," +
+            str(quantity) + "\n"
+        )
 
     file.close()
 
@@ -41,10 +49,6 @@ def get_valid_input():
     if inventory == "quit":
         return "quit"
 
-    elif inventory.isdigit() and int(inventory) <= 0:
-        print("Stock quantity must be above 0.")
-        return None
-
     elif inventory.isdigit():
         inventory = int(inventory)
 
@@ -53,68 +57,84 @@ def get_valid_input():
         else:
             print("Stock quantity must be above 0.")
             return None
-
     else:
-        print("Invalid input. Please enter a valid stock quantity or 'quit' to exit.")
+        print(
+            "Invalid input. Please enter a valid stock quantity "
+            "or 'quit' to exit."
+        )
         return None
 
-def process_delivery(current_total, new_value):
-    delivery_total = current_total + new_value
-    return delivery_total
+
+def process_delivery(inventory, product_id, product_name, quantity):
+
+    if product_id in inventory:
+        inventory[product_id][1] += quantity
+    else:
+        inventory[product_id] = [product_name, quantity]
+
 
 def calculate_tax(amount):
-    tax_rate = 0.1  # 10% tax rate
+    tax_rate = 0.1
     tax_amount = amount * tax_rate
     return tax_amount
 
-def generate_report(total_units, failed_attempts):
-    print(f"Final inventory: {total_units}")
+
+def generate_report(inventory, failed_attempts):
+    print("\nFinal inventory:")
+
+    for product_id in inventory:
+        product_name = inventory[product_id][0]
+        quantity = inventory[product_id][1]
+
+        print(product_id, product_name, quantity)
+
     print(f"Total failed entries: {failed_attempts}")
 
-# ----------------------------------------
-# Main Program
-# ----------------------------------------   
 
-# Run infinite loop until user decides to quit or inventory exceeds 500
+# -----------------------------
+# Main Program
+# -----------------------------
+
 inventory_stock, transaction_history = load_inventory()
+
 failed_entries = 0
-deliveries_processed = 0
 
 while True:
-    product_id = input("Enter product ID: ")
-    user_input = get_valid_input()
 
-    # User wants to quit
-    if user_input == "quit":
+    product_id = input("Enter product ID (or 'quit' to exit): ")
+
+    if product_id == "quit":
+        save_inventory(inventory_stock, transaction_history)
         break
 
-    # Invalid input
+    product_name = input("Enter product name: ")
+
+    user_input = get_valid_input()
+
+    if user_input == "quit":
+        save_inventory(inventory_stock, transaction_history)
+        break
+
     elif user_input is None:
         failed_entries += 1
         continue
 
-    # Valid delivery
     else:
-        # Store transaction in history
+        process_delivery(
+            inventory_stock,
+            product_id,
+            product_name,
+            user_input
+        )
+
         transaction_history.append(user_input)
 
-        inventory_stock = process_delivery(inventory_stock, user_input)
-
-        tax = calculate_tax(user_input)
-
-        deliveries_processed += 1
-
         print(f"Delivery processed: {user_input} units")
-        print(f"Tax for this delivery: {tax}")
-        print(f"Current inventory: {inventory_stock}")
 
-        if inventory_stock > 500:
-            print(
-                "Warning: Inventory exceeds maximum capacity of 500 units."
-            )
-            break
+        print(
+            f"Current stock for {product_name}: "
+            f"{inventory_stock[product_id][1]}"
+        )
 
 
 generate_report(inventory_stock, failed_entries)
-
-print("Transaction history:", transaction_history)
