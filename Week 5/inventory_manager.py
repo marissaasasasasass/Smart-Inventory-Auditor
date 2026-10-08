@@ -1,55 +1,26 @@
 # https://github.com/marissaasasasasass/Smart-Inventory-Auditor
 
+import json
 
 def load_inventory():
     inventory = []
     history = []
 
     try:
-        file = open("inventory.txt", "r")
-
-        for line in file:
-            line = line.strip()
-
-            if line == "":
-                continue
-
-            parts = line.split(",")
-            product_id = parts[0]
-            product_name = parts[1]
-            quantity = int(parts[2])
-
-            inventory.append({
-                "product_id": product_id,
-                "product_name": product_name,
-                "quantity": quantity
-            })
-
+        file = open("inventory.json", "r")
+        inventory = json.load(file)
         file.close()
 
     except FileNotFoundError:
-        inventory = [
-            {"product_id": "P001", "product_name": "Apple", "quantity": 10},
-            {"product_id": "P002", "product_name": "Banana", "quantity": 20},
-            {"product_id": "P003", "product_name": "Orange", "quantity": 15}
-        ]
+        pass
 
     return inventory, history
 
 
 def save_inventory(inventory, history):
-    file = open("inventory.txt", "w")
+    file = open("inventory.json", "w")
 
-    for product in inventory:
-        product_id = product["product_id"]
-        product_name = product["product_name"]
-        quantity = product["quantity"]
-
-        file.write(
-            product_id + "," +
-            product_name + "," +
-            str(quantity) + "\n"
-        )
+    json.dump(inventory, file, indent=4)
 
     file.close()
 
