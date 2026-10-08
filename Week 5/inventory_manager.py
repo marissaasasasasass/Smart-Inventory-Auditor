@@ -1,7 +1,8 @@
 # https://github.com/marissaasasasasass/Smart-Inventory-Auditor
 
+
 def load_inventory():
-    inventory = {}
+    inventory = []
     history = []
 
     try:
@@ -17,12 +18,21 @@ def load_inventory():
             product_id = parts[0]
             product_name = parts[1]
             quantity = int(parts[2])
-            inventory[product_id] = [product_name, quantity]
+
+            inventory.append({
+                "product_id": product_id,
+                "product_name": product_name,
+                "quantity": quantity
+            })
 
         file.close()
 
     except FileNotFoundError:
-        pass
+        inventory = [
+            {"product_id": "P001", "product_name": "Apple", "quantity": 10},
+            {"product_id": "P002", "product_name": "Banana", "quantity": 20},
+            {"product_id": "P003", "product_name": "Orange", "quantity": 15}
+        ]
 
     return inventory, history
 
@@ -30,9 +40,10 @@ def load_inventory():
 def save_inventory(inventory, history):
     file = open("inventory.txt", "w")
 
-    for product_id in inventory:
-        product_name = inventory[product_id][0]
-        quantity = inventory[product_id][1]
+    for product in inventory:
+        product_id = product["product_id"]
+        product_name = product["product_name"]
+        quantity = product["quantity"]
 
         file.write(
             product_id + "," +
@@ -44,19 +55,20 @@ def save_inventory(inventory, history):
 
 
 def get_valid_input():
-    inventory = input("Enter a stock quantity (or 'quit' to exit): ")
+    quantity = input("Enter a stock quantity (or 'quit' to exit): ")
 
-    if inventory == "quit":
+    if quantity == "quit":
         return "quit"
 
-    elif inventory.isdigit():
-        inventory = int(inventory)
+    elif quantity.isdigit():
+        quantity = int(quantity)
 
-        if inventory > 0:
-            return inventory
+        if quantity > 0:
+            return quantity
         else:
             print("Stock quantity must be above 0.")
             return None
+
     else:
         print(
             "Invalid input. Please enter a valid stock quantity "
@@ -65,11 +77,12 @@ def get_valid_input():
         return None
 
 
-def process_delivery(inventory, product_id, product_name, quantity):
+# NEW FUNCTION 1
+def add_product(inventory, product_id, product_name, quantity):
 
     for product in inventory:
         if product["product_id"] == product_id:
-            product["quantity"] += quantity
+            print("Product already exists.")
             return
 
     inventory.append({
@@ -78,6 +91,55 @@ def process_delivery(inventory, product_id, product_name, quantity):
         "quantity": quantity
     })
 
+    print("Product added successfully.")
+
+
+# NEW FUNCTION 2
+def update_stock(inventory, product_id, quantity):
+
+    for product in inventory:
+        if product["product_id"] == product_id:
+            product["quantity"] += quantity
+            print("Stock updated successfully.")
+            return
+
+    print("Product not found.")
+
+
+# NEW FUNCTION 3
+def search_product(inventory, product_id):
+
+    for product in inventory:
+        if product["product_id"] == product_id:
+            return product
+
+    return None
+
+
+# NEW FUNCTION 4
+def display_all(inventory):
+
+    print("\nCurrent Inventory:")
+
+    for product in inventory:
+        print(
+            product["product_id"],
+            product["product_name"],
+            product["quantity"]
+        )
+
+
+def process_delivery(inventory, product_id, product_name, quantity):
+
+    product = search_product(inventory, product_id)
+
+    if product is not None:
+        update_stock(inventory, product_id, quantity)
+
+    else:
+        add_product(inventory, product_id, product_name, quantity)
+
+
 def calculate_tax(amount):
     tax_rate = 0.1
     tax_amount = amount * tax_rate
@@ -85,13 +147,10 @@ def calculate_tax(amount):
 
 
 def generate_report(inventory, failed_attempts):
+
     print("\nFinal inventory:")
 
-    for product_id in inventory:
-        product_name = inventory[product_id][0]
-        quantity = inventory[product_id][1]
-
-        print(product_id, product_name, quantity)
+    display_all(inventory)
 
     print(f"Total failed entries: {failed_attempts}")
 
@@ -136,9 +195,11 @@ while True:
 
         print(f"Delivery processed: {user_input} units")
 
+        product = search_product(inventory_stock, product_id)
+
         print(
             f"Current stock for {product_name}: "
-            f"{inventory_stock[product_id][1]}"
+            f"{product['quantity']}"
         )
 
 
