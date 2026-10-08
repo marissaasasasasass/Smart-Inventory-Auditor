@@ -49,7 +49,7 @@ def get_valid_input():
 
 
 # NEW FUNCTION 1
-def add_product(inventory, product_id, product_name, quantity):
+def add_product(inventory, product_id, product_name, price, quantity):
 
     for product in inventory:
         if product["product_id"] == product_id:
@@ -59,6 +59,7 @@ def add_product(inventory, product_id, product_name, quantity):
     inventory.append({
         "product_id": product_id,
         "product_name": product_name,
+        "price": price,
         "quantity": quantity
     })
 
@@ -70,38 +71,35 @@ def update_stock(inventory, product_id, quantity):
 
     for product in inventory:
         if product["product_id"] == product_id:
-            product["quantity"] += quantity
+            product["quantity"] = quantity
             print("Stock updated successfully.")
             return
 
     print("Product not found.")
 
-
 # NEW FUNCTION 3
 def search_product(inventory, product_id):
-
     for product in inventory:
         if product["product_id"] == product_id:
             return product
-
     return None
 
 
 # NEW FUNCTION 4
 def display_all(inventory):
 
-    print("\nCurrent Inventory:")
-
+    print("------------------------------")
     for product in inventory:
         print(
-            product["product_id"],
-            product["product_name"],
-            product["quantity"]
+            f"ID: {product['product_id']} | "
+            f"Name: {product['product_name']} | "
+            f"Price: ${product['price']:.2f} | "
+            f"Stock: {product['quantity']}"
         )
+    print("------------------------------")
 
 
 def process_delivery(inventory, product_id, product_name, quantity):
-
     product = search_product(inventory, product_id)
 
     if product is not None:
@@ -118,60 +116,116 @@ def calculate_tax(amount):
 
 
 def generate_report(inventory, failed_attempts):
-
     print("\nFinal inventory:")
-
     display_all(inventory)
-
     print(f"Total failed entries: {failed_attempts}")
+
+def display_menu():
+    print("\n---------- MENU ----------")
+    print("1. Display All Products")
+    print("2. Add Product")
+    print("3. Update Stock")
+    print("4. Search Product")
+    print("5. Save Inventory")
+    print("6. Exit")
+    print("--------------------------")
 
 
 # -----------------------------
 # Main Program
 # -----------------------------
 
-inventory_stock, transaction_history = load_inventory()
 
-failed_entries = 0
+# -----------------------------
+# Main Program
+# -----------------------------
+
+print("========================================")
+print("INVENTORY MANAGEMENT SYSTEM")
+print("========================================")
+
+inventory_stock, transaction_history = load_inventory()
 
 while True:
 
-    product_id = input("Enter product ID (or 'quit' to exit): ")
+    display_menu()
 
-    if product_id == "quit":
-        save_inventory(inventory_stock, transaction_history)
-        break
+    option = input("Enter option: ")
 
-    product_name = input("Enter product name: ")
+    if option == "1":
+        print("\nCurrent Inventory")
+        display_all(inventory_stock)
 
-    user_input = get_valid_input()
+    elif option == "2":
+        print("\nAdd New Product")
 
-    if user_input == "quit":
-        save_inventory(inventory_stock, transaction_history)
-        break
+        product_id = input("Product ID: ")
+        product_name = input("Product Name: ")
+        price = float(input("Price: "))
+        quantity = int(input("Stock Quantity: "))
 
-    elif user_input is None:
-        failed_entries += 1
-        continue
-
-    else:
-        process_delivery(
+        add_product(
             inventory_stock,
             product_id,
             product_name,
-            user_input
+            price,
+            quantity
         )
 
-        transaction_history.append(user_input)
+    elif option == "3":
+        print("\nUpdate Stock")
 
-        print(f"Delivery processed: {user_input} units")
+        product_id = input("Enter Product ID: ")
 
         product = search_product(inventory_stock, product_id)
 
-        print(
-            f"Current stock for {product_name}: "
-            f"{product['quantity']}"
-        )
+        if product is not None:
+            print("\nProduct Found:")
+            print("Name:", product["product_name"])
+            print("Current Stock:", product["quantity"])
 
+            quantity = int(input("\nNew Stock Quantity: "))
 
-generate_report(inventory_stock, failed_entries)
+            update_stock(inventory_stock, product_id, quantity)
+
+        else:
+            print("Product not found.")
+
+    elif option == "4":
+        print("\nSearch Product")
+
+        product_id = input("Enter Product ID: ")
+
+        product = search_product(inventory_stock, product_id)
+
+        if product is not None:
+            print("\nProduct Found")
+            print("------------------------------")
+            print("ID:", product["product_id"])
+            print("Name:", product["product_name"])
+            print(f"Price: ${product['price']:.2f}")
+            print("Stock:", product["quantity"])
+            print("------------------------------")
+
+        else:
+            print("\nProduct not found.")
+
+    elif option == "5":
+        print("\nSaving inventory...")
+
+        save_inventory(inventory_stock, transaction_history)
+
+        print("Inventory saved successfully to inventory.json.")
+
+    elif option == "6":
+        print("\nSaving inventory before exit...")
+
+        save_inventory(inventory_stock, transaction_history)
+
+        print("Inventory saved successfully.")
+        print("\nThank you for using Inventory Management System.")
+        print("Program terminated.")
+        break
+
+    else:
+        print("Invalid option. Please enter 1 to 6.")
