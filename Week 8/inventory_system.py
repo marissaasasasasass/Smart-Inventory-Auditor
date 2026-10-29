@@ -70,19 +70,30 @@ class Inventory:
         return self.__products
 
 def load_inventory():
-    inventory = []
+
+    inventory = Inventory()
     history = []
 
     try:
         file = open("inventory.json", "r")
-        inventory = json.load(file)
+        data = json.load(file)
         file.close()
+
+        for item in data:
+
+            product = Product(
+                item["product_id"],
+                item["product_name"],
+                item["price"],
+                item["quantity"]
+            )
+
+            inventory.add_product(product)
 
     except FileNotFoundError:
         pass
 
     return inventory, history
-
 
 def save_inventory(inventory, history):
     file = open("inventory.json", "w")
