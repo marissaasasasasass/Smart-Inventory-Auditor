@@ -96,9 +96,21 @@ def load_inventory():
     return inventory, history
 
 def save_inventory(inventory, history):
+
+    data = []
+
+    for product in inventory.get_products():
+
+        data.append({
+            "product_id": product.get_product_id(),
+            "product_name": product.get_name(),
+            "price": product.get_price(),
+            "quantity": product.get_stock()
+        })
+
     file = open("inventory.json", "w")
 
-    json.dump(inventory, file, indent=4)
+    json.dump(data, file, indent=4)
 
     file.close()
 
