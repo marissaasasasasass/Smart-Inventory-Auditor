@@ -22,6 +22,18 @@ class Product:
             f"Stock: {self.__stock}"
         )
 
+    def get_product_id(self):
+        return self.__product_id
+
+    def get_name(self):
+        return self.__name
+
+    def get_price(self):
+        return self.__price
+
+    def get_stock(self):
+        return self.__stock    
+
 def load_inventory():
     inventory = []
     history = []
