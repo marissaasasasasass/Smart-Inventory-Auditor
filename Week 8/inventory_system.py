@@ -244,7 +244,7 @@ while True:
 
     if option == "1":
         print("\nCurrent Inventory")
-        display_all(inventory_stock)
+        inventory_stock.display_all()
 
     elif option == "2":
         print("\nAdd New Product")
@@ -254,29 +254,30 @@ while True:
         price = float(input("Price: "))
         quantity = int(input("Stock Quantity: "))
 
-        add_product(
-            inventory_stock,
+        product = Product(
             product_id,
             product_name,
             price,
             quantity
         )
 
+        inventory_stock.add_product(product)
+
     elif option == "3":
         print("\nUpdate Stock")
 
         product_id = input("Enter Product ID: ")
 
-        product = search_product(inventory_stock, product_id)
+        product = inventory_stock.search_product(product_id)
 
         if product is not None:
             print("\nProduct Found:")
-            print("Name:", product["product_name"])
-            print("Current Stock:", product["quantity"])
+            print("Name:", product.get_name())
+            print("Current Stock:", product.get_stock())
 
             quantity = int(input("\nNew Stock Quantity: "))
 
-            update_stock(inventory_stock, product_id, quantity)
+            product.update_stock(quantity)
 
         else:
             print("Product not found.")
@@ -286,15 +287,12 @@ while True:
 
         product_id = input("Enter Product ID: ")
 
-        product = search_product(inventory_stock, product_id)
+        product = inventory_stock.search_product(product_id)
 
         if product is not None:
             print("\nProduct Found")
             print("------------------------------")
-            print("ID:", product["product_id"])
-            print("Name:", product["product_name"])
-            print(f"Price: ${product['price']:.2f}")
-            print("Stock:", product["quantity"])
+            product.display_information()
             print("------------------------------")
 
         else:
