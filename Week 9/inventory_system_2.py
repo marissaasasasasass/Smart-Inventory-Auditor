@@ -77,9 +77,11 @@ class PhysicalProduct(Product, CanBeShipped):
 
         self.__weight = weight
 
+
     def display_information(self):
         super().display_information()
         print(f"Weight: {self.__weight} kg")
+        print(self.get_fulfilment_info())
 
     def get_weight(self):
         return self.__weight
@@ -104,11 +106,12 @@ class DigitalProduct(Product):
 
         self.__download_size = download_size
 
+
     def display_information(self):
-
         super().display_information()
-
         print(f"Download Size: {self.__download_size} MB")
+        print(self.get_fulfilment_info())
+
 
     def get_download_size(self):
         return self.__download_size
@@ -172,6 +175,11 @@ class Inventory:
 # File Handling
 # -----------------------------
 
+
+# -----------------------------
+# File Handling
+# -----------------------------
+
 def load_inventory():
 
     inventory = Inventory()
@@ -182,12 +190,29 @@ def load_inventory():
 
         for item in data:
 
-            product = Product(
-                item["product_id"],
-                item["product_name"],
-                item["price"],
-                item["quantity"]
-            )
+            if item["type"] == "physical":
+
+                product = PhysicalProduct(
+                    item["product_id"],
+                    item["product_name"],
+                    item["price"],
+                    item["quantity"],
+                    item["weight"]
+                )
+
+            elif item["type"] == "digital":
+
+                product = DigitalProduct(
+                    item["product_id"],
+                    item["product_name"],
+                    item["price"],
+                    item["quantity"],
+                    item["download_size"]
+                )
+
+            else:
+                print("Unknown product type. Skipping product.")
+                continue
 
             inventory.add_product(product, False)
 
@@ -200,18 +225,31 @@ def load_inventory():
     return inventory
 
 
+
 def save_inventory(inventory):
 
     data = []
 
     for product in inventory.get_products():
 
-        data.append({
+        product_data = {
             "product_id": product.get_product_id(),
             "product_name": product.get_name(),
             "price": product.get_price(),
             "quantity": product.get_stock()
-        })
+        }
+
+        if isinstance(product, PhysicalProduct):
+
+            product_data["type"] = "physical"
+            product_data["weight"] = product.get_weight()
+
+        elif isinstance(product, DigitalProduct):
+
+            product_data["type"] = "digital"
+            product_data["download_size"] = product.get_download_size()
+
+        data.append(product_data)
 
     with open("inventory.json", "w") as file:
         json.dump(data, file, indent=4)
@@ -260,24 +298,57 @@ while True:
 
         print("\nAdd New Product")
 
-        product_id = input("Product ID: ")
-        product_name = input("Product Name: ")
+        print("1. Physical Product")
+        print("2. Digital Product")
 
-        try:
-            price = float(input("Price: "))
-            quantity = int(input("Stock Quantity: "))
+        product_type = input("Select Product Type: ")
 
-            product = Product(
-                product_id,
-                product_name,
-                price,
-                quantity
-            )
+        if product_type == "1" or product_type == "2":
 
-            inventory_stock.add_product(product)
+            product_id = input("Product ID: ")
+            product_name = input("Product Name: ")
 
-        except ValueError:
-            print("Invalid input. Price and stock quantity must be valid non-negative numbers.")
+            try:
+                price = float(input("Price: "))
+                quantity = int(input("Stock Quantity: "))
+
+                if product_type == "1":
+
+                    weight = float(input("Weight (kg): "))
+
+                    if weight < 0:
+                        raise ValueError
+
+                    product = PhysicalProduct(
+                        product_id,
+                        product_name,
+                        price,
+                        quantity,
+                        weight
+                    )
+
+                else:
+
+                    download_size = float(input("Download Size (MB): "))
+
+                    if download_size < 0:
+                        raise ValueError
+
+                    product = DigitalProduct(
+                        product_id,
+                        product_name,
+                        price,
+                        quantity,
+                        download_size
+                    )
+
+                inventory_stock.add_product(product)
+
+            except ValueError:
+                print("Invalid input. Please enter valid non-negative numbers.")
+
+        else:
+            print("Invalid product type.")
 
     # Option 3: Update Stock
     elif option == "3":
