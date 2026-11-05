@@ -56,10 +56,20 @@ class Product(ABC):
         pass
 
 # -----------------------------
+# CanBeShipped Interface
+# -----------------------------
+
+class CanBeShipped(ABC):
+
+    @abstractmethod
+    def calculate_shipping_cost(self):
+        pass
+
+# -----------------------------
 # PhysicalProduct Class
 # -----------------------------
 
-class PhysicalProduct(Product):
+class PhysicalProduct(Product, CanBeShipped):
 
     def __init__(self, product_id, product_name, price, quantity, weight):
 
@@ -78,10 +88,14 @@ class PhysicalProduct(Product):
     def get_fulfilment_info(self):
         return "This product requires physical shipping."
 
+    
+    def calculate_shipping_cost(self):
+        shipping_cost = self.__weight * 5
+        return shipping_cost
+
 # -----------------------------
 # DigitalProduct Class
 # -----------------------------
-
 class DigitalProduct(Product):
 
     def __init__(self, product_id, product_name, price, quantity, download_size):
