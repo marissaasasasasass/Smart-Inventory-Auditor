@@ -1,14 +1,15 @@
 # https://github.com/marissaasasasasass/Smart-Inventory-Auditor
 
-
 import json
-
+from abc import ABC, abstractmethod
 
 # -----------------------------
 # Product Class
 # -----------------------------
+# Abstract Base Class for Products
+# -----------------------------
 
-class Product:
+class Product(ABC):
 
     def __init__(self, product_id, product_name, price, quantity):
 
@@ -50,6 +51,10 @@ class Product:
     def get_stock(self):
         return self.__stock
 
+    @abstractmethod
+    def get_fulfilment_info(self):
+        pass
+
 # -----------------------------
 # PhysicalProduct Class
 # -----------------------------
@@ -63,13 +68,15 @@ class PhysicalProduct(Product):
         self.__weight = weight
 
     def display_information(self):
-
         super().display_information()
-
         print(f"Weight: {self.__weight} kg")
 
     def get_weight(self):
         return self.__weight
+
+    
+    def get_fulfilment_info(self):
+        return "This product requires physical shipping."
 
 # -----------------------------
 # DigitalProduct Class
@@ -91,6 +98,10 @@ class DigitalProduct(Product):
 
     def get_download_size(self):
         return self.__download_size
+
+    
+    def get_fulfilment_info(self):
+        return "This product is delivered digitally."
 
 # -----------------------------
 # Inventory Class
